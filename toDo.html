@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="Cache-Control" content="no-cache">
+        <title>To Do</title>
+        <link rel="stylesheet" href="font-awesome.min.css">
+        <style>
+            body{
+                position: absolute;
+                top: 0px;
+                left: 0px;
+                display: flex;
+                background-color: rgb(167, 203, 253);
+                justify-content: center;
+                height: 100%;
+                width: 100%;
+                margin: 0;
+                overflow: hidden;
+            }
+            #main{
+                height: 100%;
+                width: 500px;
+                display: flex;
+                flex-direction:column;
+                background-color: rgb(187, 215, 255);
+            }
+            #bar{
+                height: 60px;
+                width: 500px;
+                padding-top: 15px;
+                box-sizing: border-box;
+
+            }
+            #list{
+                margin-top: 10px;
+            }
+            #title{
+                width: 410px;
+                display: inline-block;
+                text-align: center;
+                margin: 0;
+                outline: 0;
+            }
+            #title:focus{
+                background-color: rgb(213, 231, 255);
+            }
+            #add{
+                display: inline-block;
+                color: white;
+                width: 30px;
+                height: 30px;
+                border-radius: 5px;
+                background-color: rgb(158, 158, 158);
+                padding-top: 8.5px;
+                padding-left: 8.5px;
+                box-sizing: border-box;
+
+            }
+            #add:hover{
+                background-color: rgb(163, 163, 163);
+            }
+            #add:active{
+                background-color: rgb(184, 183, 183);
+            }
+            #open{
+                display: inline-block;
+                color: white;
+                width: 30px;
+                height: 30px;
+                border-radius: 5px;
+                background-color: rgb(158, 158, 158);
+                padding-top: 8px;
+                padding-left: 8px;
+                box-sizing: border-box;
+                margin: 6px;
+
+            }
+            #open:hover{
+                background-color: rgb(163, 163, 163);
+            }
+            #open:active{
+                background-color: rgb(184, 183, 183);
+            }
+            .item{
+                height: 50px;
+                background-color: rgb(203, 229, 255);
+                border-radius: 10px;
+                margin-left: 15px;
+                margin-right: 15px;
+                box-sizing: border-box;
+                font-size:larger;
+                padding-top: 10px;
+                padding-left: 10px;
+                margin-bottom: 10px;
+                transition: all ease-in-out 0.5s;
+                overflow: hidden;
+            }
+            .item_input{
+                outline: 0;
+            }
+            .item_ok{
+                float: right;
+                color: white;
+                margin-right: 15px;
+                margin-top: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="main">
+            <div id="bar">
+                <h3 id="title" contenteditable="true" onblur="localStorage.setItem('lastName',document.getElementById('title').innerText)">To Do List</h3>
+                <div id="add" class="fa fa-plus" onclick="createItem()"></div>
+                <div id="open" class="fa fa-folder-open"></div>
+            </div>  
+            <div id="list">
+                <!-- <div class="item">
+                    <span class="item_input" contenteditable="false">Test</span>
+                    <span class="item_ok fa fa-close"></span>
+                </div> -->
+                
+            </div>
+        </div>
+        <script>
+            let gid=0,id='test',textlist=[],idList=[];
+
+            function createItem(){
+                textlist.push('')
+                idList.push(gid)
+                let item=document.createElement('div');
+                let item_input=document.createElement('span');
+                let item_close=document.createElement('span');
+                item.classList.add('item')
+                item.id=gid++
+                item_input.classList.add('item_input')
+                item_close.classList.add('item_ok')
+                item_close.classList.add('fa')
+                item_close.classList.add('fa-close')
+                item.appendChild(item_input)
+                item.appendChild(item_close)
+                item_input.contentEditable=true
+                item_input.onkeydown=(e)=>{
+                    if(e.keyCode===32 || e.keyCode===13){
+                        e.preventDefault();
+                        item_input.blur()
+                        return;
+                    }
+                }
+                item_input.onblur=(e)=>{
+                    item_input.contentEditable=false
+                    textlist[idList.indexOf(Number(item.id))]=item_input.innerText
+                    if(item_input.innerText==''){
+                        item_close.click()
+                        return 0
+                    }
+                    localStorage.setItem('toDoList'+id,textlist)
+                }
+                item_close.onclick=(e)=>{
+                    delete textlist[idList.indexOf(Number(item.id))]
+                    delete idList[idList.indexOf(Number(item.id))]
+                    item.style.height=0
+                    item.style.padding=0
+                    setTimeout(()=>{item.remove()},500)
+                    localStorage.setItem('toDoList'+id,textlist)
+                }
+                item.ondblclick=(e)=>{
+                    item_input.contentEditable=true
+                    item_input.focus()
+                }
+                document.getElementById('list').appendChild(item)
+                item_input.focus()
+            }
+            function createItemNamed(text){
+                if(text==''){
+                    return 
+                }
+                textlist.push(text)
+                idList.push(gid)
+                let item=document.createElement('div');
+                let item_input=document.createElement('span');
+                let item_close=document.createElement('span');
+                item.classList.add('item')
+                item.id=gid++
+                item_input.classList.add('item_input')
+                item_close.classList.add('item_ok')
+                item_close.classList.add('fa')
+                item_close.classList.add('fa-close')
+                item.appendChild(item_input)
+                item.appendChild(item_close)
+                item_input.innerText=text
+                item_input.onblur=(e)=>{
+                    textlist[idList.indexOf(Number(item.id))]=item_input.innerText
+                    item_input.contentEditable=false
+                    if(item_input.innerText==''){
+                        item_close.click()
+                        return 0
+                    }
+                    localStorage.setItem('toDoList'+id,textlist)
+                }
+                item_input.onkeydown=(e)=>{
+                    if(e.keyCode===32 || e.keyCode===13){
+                        e.preventDefault();
+                        item_input.blur()
+                        return;
+                    }
+                }
+                item_close.onclick=(e)=>{
+                    delete textlist[idList.indexOf(Number(item.id))]
+                    delete idList[idList.indexOf(Number(item.id))]
+                    item.style.height=0
+                    item.style.padding=0
+                    setTimeout(()=>{item.remove()},500)
+                    localStorage.setItem('toDoList'+id,textlist)
+                }
+                item.ondblclick=(e)=>{
+                    item_input.contentEditable=true
+                    item_input.focus()
+                }
+                document.getElementById('list').appendChild(item)
+            }
+            function loadList(id){
+                if(!localStorage.getItem('toDoList'+id)){
+                    localStorage.setItem('toDoList'+id,[])
+                }
+                let list=localStorage.getItem('toDoList'+id).split(',')
+                for(let i=0;i<list.length;i++){
+                    createItemNamed(list[i])
+                    //textlist.push()
+                }
+            }
+            if(localStorage.getItem('lastName')){
+                document.getElementById('title').innerText=localStorage.getItem('lastName')
+                console.log(localStorage.getItem('lastName'))
+            }else{
+                localStorage.setItem('lastName',document.getElementById('title').innerText)
+            }
+            loadList('test')
+        </script>
+    </body>
+</html>
